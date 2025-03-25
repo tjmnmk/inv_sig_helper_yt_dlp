@@ -11,7 +11,7 @@ services:
       - 127.0.0.1:12999:12999
     environment:
       - RUST_LOG=info
-      # - USE_YT_DLP=1
+      - USE_YT_DLP=1
       # use yt-dlp for decoding signatures instead of bulit-in code
     restart: unless-stopped
     cap_drop:
