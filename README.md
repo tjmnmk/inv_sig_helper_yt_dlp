@@ -1,6 +1,6 @@
 # inv_sig_helper_yt_dlp
 
-*`inv_sig_helper_yt_dlp` is a fork that supports signature decoding using `yt-dlp`.*
+**`inv_sig_helper_yt_dlp` is a fork that supports signature decoding using `yt-dlp`.**
 
 `inv_sig_helper` is a Rust service that decrypts YouTube signatures and manages player information. It offers a TCP/Unix socket interface for signature decryption and related operations.
 
