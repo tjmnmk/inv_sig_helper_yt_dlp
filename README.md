@@ -4,6 +4,15 @@
 
 `inv_sig_helper` is a Rust service that decrypts YouTube signatures and manages player information. It offers a TCP/Unix socket interface for signature decryption and related operations.
 
+## Replace default inv_sig_helper
+
+```
+docker stop "$(docker ps |grep sig_helper |awk '{print 1$}')" # and remove the service from `docker-compse.yaml`
+git clone https://github.com/tjmnmk/inv_sig_helper_yt_dlp.git
+cd inv_sig_helper_yt_dlp
+docker compose up --build --force-recreate --no-deps -d
+```
+
 ## Features
 
 - Decrypt YouTube `n` and `s` signatures
