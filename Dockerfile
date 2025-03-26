@@ -21,6 +21,7 @@ COPY . .
 
 # make sure the scripts are executable
 RUN chmod +x src/scripts/*
+RUN chmod +x entrypoint.sh
 
 # Determine the target architecture and build the application
 RUN RUST_TARGET=$(rustc -vV | sed -n 's/host: //p') && \
@@ -46,6 +47,7 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copy scripts
 COPY --from=builder /usr/src/app/src/scripts /app/scripts
+COPY --from=builder /usr/src/app/entrypoint.sh /app/entrypoint.sh
 
 # Set the working directory
 WORKDIR /app
@@ -57,7 +59,7 @@ EXPOSE 12999
 USER appuser
 
 # Set the entrypoint to the binary name
-ENTRYPOINT ["/app/inv_sig_helper_rust"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Set default arguments in CMD
 CMD ["--tcp", "127.0.0.1:12999"]
