@@ -30,3 +30,5 @@ pub static NSIG_FUNCTION_NAME: &str = "decrypt_nsig";
 pub static SIG_FUNCTION_NAME: &str = "decrypt_sig";
 
 pub static ENV_USE_YT_DLP: &str = "USE_YT_DLP";
+pub static ENV_PLAYER_ID_FORCE: &str = "PLAYER_ID_FORCE";
+pub static ENV_PLAYER_ID_UPDATE_DISABLED: &str = "PLAYER_ID_UPDATE_DISABLED";

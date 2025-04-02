@@ -15,6 +15,13 @@ docker compose up --build --force-recreate --no-deps -d
 
 ## Features
 
+- Supported env variables:
+```
+USE_YT_DLP=0/1
+PLAYER_ID_FORCE=aaa55ccc
+PLAYER_ID_UPDATE_DISABLED=0/1
+``` 
+
 - Decrypt YouTube `n` and `s` signatures
 - Fetch and update YouTube player data
 - Provide signature timestamps and player status

@@ -5,7 +5,8 @@ use regex::Regex;
 use crate::{
     consts::{
         NSIG_FUNCTION_ARRAYS, NSIG_FUNCTION_ENDINGS, NSIG_FUNCTION_NAME, REGEX_HELPER_OBJ_NAME,
-        REGEX_PLAYER_ID, REGEX_SIGNATURE_FUNCTION, REGEX_SIGNATURE_TIMESTAMP, TEST_YOUTUBE_VIDEO,
+        REGEX_PLAYER_ID, REGEX_SIGNATURE_FUNCTION, REGEX_SIGNATURE_TIMESTAMP, TEST_YOUTUBE_VIDEO, 
+        ENV_PLAYER_ID_FORCE, ENV_PLAYER_ID_UPDATE_DISABLED
     },
     jobs::GlobalState,
     ytdlp::{ytdlp_requested, ytdlp_signature_timestamp},
@@ -19,6 +20,20 @@ pub enum FetchUpdateStatus {
     CannotFetchPlayerJS,
     NsigRegexCompileFailed,
     PlayerAlreadyUpdated,
+}
+
+// return the player ID from the environment variable or 0 if not set
+fn player_id_forced() -> u32 {
+    let player_id = std::env::var(ENV_PLAYER_ID_FORCE).unwrap_or_else(|_| "0".to_string());
+    if player_id == "0" {
+        return 0;
+    }
+
+    u32::from_str_radix(&player_id, 16).unwrap()
+}
+
+fn player_id_update_disabled() -> bool {
+    std::env::var(ENV_PLAYER_ID_UPDATE_DISABLED).unwrap_or_else(|_| "0".to_string()) == "1"
 }
 
 fn extract_player_js_global_var(jscode: &str) -> Option<(String, String, String)> {
@@ -93,15 +108,31 @@ pub async fn fetch_update(state: Arc<GlobalState>) -> Result<(), FetchUpdateStat
         }
     };
 
-    let player_id_str = match REGEX_PLAYER_ID.captures(&response).unwrap().get(1) {
-        Some(result) => result.as_str(),
-        None => return Err(FetchUpdateStatus::CannotMatchPlayerID),
-    };
+    let player_id: u32 = player_id_forced();
+    if player_id == 0 {
+        let player_id_str = match REGEX_PLAYER_ID.captures(&response).unwrap().get(1) {
+            Some(result) => result.as_str(),
+            None => return Err(FetchUpdateStatus::CannotMatchPlayerID),
+        };
 
-    let player_id: u32 = u32::from_str_radix(player_id_str, 16).unwrap();
+        player_id = u32::from_str_radix(player_id_str, 16).unwrap();
+    } else {
+        info!("Using forced player ID: {}", player_id);
+    }
 
     let mut current_player_info = global_state.player_info.lock().await;
     let current_player_id = current_player_info.player_id;
+
+    if (current_player_info.has_player == 0xFF) {
+        if player_id_forced() != 0 {
+            info!("Player ID forced, skipping update");
+            return Ok(());
+        }
+        if player_id_update_disabled() {
+            info!("Player ID update disabled, skipping update");
+            return Ok(());
+        }
+    }
 
     if player_id == current_player_id {
         current_player_info.last_update = SystemTime::now();
