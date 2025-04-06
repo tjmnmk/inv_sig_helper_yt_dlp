@@ -1,4 +1,7 @@
-# inv_sig_helper_yt_dlp
+# You probably want to use [inv_sig_helper_yt_dlp_python](https://github.com/tjmnmk/inv_sig_helper_yt_dlp_python), which has much higher performance.
+
+
+## inv_sig_helper_yt_dlp
 
 **`inv_sig_helper_yt_dlp` is a fork that supports signature decoding using `yt-dlp`.**
 
